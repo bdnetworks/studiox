@@ -269,9 +269,9 @@ export default function HomePage() {
                 </div>
             </div>
           </CardHeader>
-          <CardContent className="text-justify leading-relaxed tracking-wider">
+          <CardContent className="relative text-justify leading-relaxed tracking-wider">
             {status === 'finished' && (
-              <div className="absolute inset-0 z-10 flex flex-col items-center justify-center bg-card/80 backdrop-blur-sm">
+              <div className="absolute inset-0 z-20 flex flex-col items-center justify-center bg-card/80 backdrop-blur-sm">
                 <CardTitle className="text-3xl font-headline">Time's Up!</CardTitle>
                  <div className="mt-4 flex gap-4 text-center">
                     <div>
@@ -289,21 +289,19 @@ export default function HomePage() {
                 </Button>
               </div>
             )}
-             <div className="relative">
-                <p>
-                  {characters.map((props, index) => (
-                    <Character key={index} {...props} />
-                  ))}
-                </p>
-                <textarea
-                  ref={inputRef}
-                  className="absolute inset-0 z-10 h-full w-full cursor-text opacity-0"
-                  value={userInput}
-                  onChange={handleInputChange}
-                  onPaste={(e) => e.preventDefault()}
-                  disabled={status === 'finished'}
-                />
-            </div>
+             <p>
+               {characters.map((props, index) => (
+                 <Character key={index} {...props} />
+               ))}
+             </p>
+             <textarea
+               ref={inputRef}
+               className="absolute inset-0 z-10 h-full w-full cursor-text opacity-0"
+               value={userInput}
+               onChange={handleInputChange}
+               onPaste={(e) => e.preventDefault()}
+               disabled={status === 'finished'}
+             />
           </CardContent>
         </Card>
 
