@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useState, useEffect, useRef, useMemo, useCallback } from 'react';
@@ -45,7 +44,7 @@ export default function TypingTest({
       return;
     }
 
-    const wordsTyped = userInput.trim().split(/\s+/).length;
+    const wordsTyped = userInput.trim().split(/\s+/).filter(Boolean).length;
     const wpm = Math.round(wordsTyped / durationInMinutes);
 
     let errorCount = 0;
@@ -99,7 +98,7 @@ export default function TypingTest({
     }
     setUserInput(value);
     
-    if (value.length === text.length) {
+    if (value.length >= text.length) {
       setStatus('finished');
       if (timerIntervalRef.current) clearInterval(timerIntervalRef.current);
     }
@@ -121,7 +120,7 @@ export default function TypingTest({
   const liveWpm = useMemo(() => {
       const durationInMinutes = (timerDuration - timeLeft) / 60;
       if (durationInMinutes === 0) return 0;
-      const wordsTyped = userInput.trim().split(/\s+/).length;
+      const wordsTyped = userInput.trim().split(/\s+/).filter(Boolean).length;
       return Math.round(wordsTyped / durationInMinutes) || 0;
   }, [userInput, timeLeft, timerDuration])
 
@@ -139,36 +138,37 @@ export default function TypingTest({
 
 
   return (
-    <Card>
-      <CardContent className="p-6">
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-4 text-center mb-6">
-            <div className="rounded-lg bg-secondary p-3">
+    <Card className="overflow-hidden">
+      <div className="bg-primary/10 p-4 sm:p-6">
+        <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 text-center">
+            <div className="rounded-lg bg-card p-3 shadow-sm">
                 <p className="text-2xl font-bold text-primary">{timeLeft}</p>
                 <p className="text-xs text-muted-foreground">Time Left</p>
             </div>
-            <div className="rounded-lg bg-secondary p-3">
+            <div className="rounded-lg bg-card p-3 shadow-sm">
                 <p className="text-2xl font-bold text-primary">{status === 'running' ? liveWpm : stats.wpm}</p>
                 <p className="text-xs text-muted-foreground">WPM</p>
             </div>
-              <div className="rounded-lg bg-secondary p-3">
+              <div className="rounded-lg bg-card p-3 shadow-sm">
                 <p className="text-2xl font-bold text-primary">
                   {status === 'running' ? liveAccuracy : stats.accuracy}%
                 </p>
                 <p className="text-xs text-muted-foreground">Accuracy</p>
             </div>
-            <div className="rounded-lg bg-secondary p-3">
+            <div className="rounded-lg bg-card p-3 shadow-sm">
                 <p className="text-2xl font-bold text-primary">{stats.errors}</p>
                 <p className="text-xs text-muted-foreground">Errors</p>
             </div>
         </div>
-
+      </div>
+      <CardContent className="p-4 sm:p-6">
         <div
           onClick={() => inputRef.current?.focus()}
-          className="relative cursor-text text-justify leading-relaxed tracking-wider p-4 border rounded-md"
+          className="relative cursor-text text-justify leading-relaxed tracking-wider rounded-md bg-secondary/50 p-4 min-h-[140px]"
         >
           <textarea
             ref={inputRef}
-            className="absolute inset-0 z-10 h-full w-full p-4 resize-none bg-transparent text-transparent caret-primary opacity-100"
+            className="absolute inset-0 z-20 h-full w-full resize-none bg-transparent p-4 text-transparent caret-primary opacity-100"
             value={userInput}
             onChange={handleInputChange}
             onPaste={(e) => e.preventDefault()}
@@ -177,15 +177,20 @@ export default function TypingTest({
             autoCapitalize="none"
             autoCorrect="off"
           />
-          <div className="relative z-0">
+          <div className="relative z-10">
             <p>
-              {characters.map((props, index) => (
-                <Character key={index} {...props} />
+              {characters.map(({char, state}, index) => (
+                <Character key={`${char}-${index}`} character={char} state={state} />
               ))}
             </p>
           </div>
+          {status === 'waiting' && !userInput && (
+              <div className="absolute inset-0 z-0 flex items-center justify-center">
+                  <p className="text-muted-foreground">Start typing here...</p>
+              </div>
+          )}
           {status === 'finished' && (
-            <div className="absolute inset-0 z-20 flex flex-col items-center justify-center bg-card/80 backdrop-blur-sm rounded-md">
+            <div className="absolute inset-0 z-30 flex flex-col items-center justify-center bg-card/80 backdrop-blur-sm rounded-md">
               <h2 className="text-3xl font-headline text-primary">Time's Up!</h2>
               <div className="mt-4 flex gap-6 text-center">
                   <div>
