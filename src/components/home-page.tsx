@@ -15,11 +15,13 @@ import {
 } from '@/components/ui/select';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Label } from '@/components/ui/label';
-import { Book, Languages, RefreshCw } from 'lucide-react';
+import { Book, Languages, RefreshCw, Bot } from 'lucide-react';
 import { content, timerOptions } from '@/lib/content';
 import { cn } from '@/lib/utils';
 import TypingTest, { Status } from './typing-test';
-import { ThemeToggle } from './theme-toggle';
+import { adjustTextDifficulty } from '@/ai/flows/adjust-text-difficulty';
+import { useToast } from '@/hooks/use-toast';
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 
 type Language = 'bengali' | 'english';
 
@@ -29,12 +31,32 @@ export default function HomePage() {
   const [text, setText] = useState(content[language][selectedContentIndex].text);
   const [status, setStatus] = useState<Status>('waiting');
   const [timerDuration, setTimerDuration] = useState(60);
+  const [isSimplifying, setIsSimplifying] = useState(false);
+  const { toast } = useToast();
 
   const contentList = content[language];
 
   const resetTest = useCallback(() => {
     setStatus('waiting');
   }, []);
+
+  const handleSimplify = async () => {
+    setIsSimplifying(true);
+    try {
+      const result = await adjustTextDifficulty({ text });
+      setText(result.simplifiedText);
+      resetTest();
+    } catch (error) {
+      console.error('Error simplifying text:', error);
+      toast({
+        title: 'Error',
+        description: 'Failed to simplify the text. Please try again.',
+        variant: 'destructive',
+      });
+    } finally {
+      setIsSimplifying(false);
+    }
+  };
 
   useEffect(() => {
     resetTest();
@@ -55,16 +77,7 @@ export default function HomePage() {
   }
 
   return (
-    <div className="container mx-auto flex min-h-screen flex-col items-center justify-center p-4 sm:p-6 md:p-8">
-      <header className="w-full max-w-5xl text-center mb-8">
-        <h1 className="font-headline text-5xl md:text-6xl text-primary">Ôkkhor Sadhona</h1>
-        <p className="text-muted-foreground mt-2 text-lg">আপনার টাইপিং দক্ষতা বৃদ্ধি করুন</p>
-      </header>
-      
-      <div className='absolute top-4 right-4'>
-        <ThemeToggle />
-      </div>
-
+    <div className="container mx-auto flex flex-col items-center justify-center p-4 sm:p-6 md:p-8">
       <main className="w-full max-w-5xl space-y-6">
         <Card>
           <CardContent className="p-4 flex flex-col md:flex-row items-center justify-center gap-4 md:gap-8">
@@ -150,10 +163,30 @@ export default function HomePage() {
                     ))}
                   </RadioGroup>
                 </div>
+                <div className="flex items-center gap-2">
+                <TooltipProvider>
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <Button
+                        onClick={handleSimplify}
+                        variant="outline"
+                        disabled={status === 'running' || isSimplifying || language !== 'bengali'}
+                      >
+                        <Bot className="mr-2 h-4 w-4" />
+                        {isSimplifying ? 'সহজ করা হচ্ছে...' : 'সহজ করুন'}
+                      </Button>
+                    </TooltipTrigger>
+                    <TooltipContent>
+                      <p>AI ব্যবহার করে লেখাটি সহজ করুন</p>
+                    </TooltipContent>
+                  </Tooltip>
+                </TooltipProvider>
+
                 <Button onClick={resetTest} variant="outline" className="w-full sm:w-auto">
                     <RefreshCw className="mr-2 h-4 w-4" />
                     Reset
                 </Button>
+              </div>
             </CardContent>
         </Card>
       </main>

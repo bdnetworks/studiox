@@ -2,6 +2,7 @@ import type { Metadata } from 'next';
 import { Toaster } from "@/components/ui/toaster"
 import './globals.css';
 import { ThemeProvider } from '@/components/theme-provider';
+import AppHeader from '@/components/header';
 
 export const metadata: Metadata = {
   title: 'Ôkkhor Sadhona',
@@ -27,7 +28,12 @@ export default function RootLayout({
             enableSystem
             disableTransitionOnChange
         >
-            {children}
+            <div className="flex flex-col min-h-screen">
+              <AppHeader />
+              <main className="flex-grow">
+                {children}
+              </main>
+            </div>
             <Toaster />
         </ThemeProvider>
       </body>
