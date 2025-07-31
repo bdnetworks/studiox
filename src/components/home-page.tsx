@@ -5,9 +5,6 @@ import { Button } from '@/components/ui/button';
 import {
   Card,
   CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
 } from '@/components/ui/card';
 import {
   Select,
@@ -18,18 +15,11 @@ import {
 } from '@/components/ui/select';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Label } from '@/components/ui/label';
-import { Book, BrainCircuit, Languages, Loader2, RefreshCw } from 'lucide-react';
+import { Book, Languages, RefreshCw } from 'lucide-react';
 import { content, timerOptions } from '@/lib/content';
-import { useToast } from '@/hooks/use-toast';
-import { adjustTextDifficulty } from '@/ai/flows/adjust-text-difficulty';
 import { cn } from '@/lib/utils';
 import TypingTest, { Status } from './typing-test';
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from '@/components/ui/tooltip';
+import { ThemeToggle } from './theme-toggle';
 
 type Language = 'bengali' | 'english';
 
@@ -39,10 +29,7 @@ export default function HomePage() {
   const [text, setText] = useState(content[language][selectedContentIndex].text);
   const [status, setStatus] = useState<Status>('waiting');
   const [timerDuration, setTimerDuration] = useState(60);
-  const [isSimplifying, setIsSimplifying] = useState(false);
 
-  const { toast } = useToast();
-  
   const contentList = content[language];
 
   const resetTest = useCallback(() => {
@@ -62,28 +49,6 @@ export default function HomePage() {
     resetTest();
   };
   
-  const handleSimplify = async () => {
-    if (isSimplifying || status !== 'waiting') return;
-    setIsSimplifying(true);
-    try {
-      const result = await adjustTextDifficulty({ text });
-      setText(result.simplifiedText);
-      resetTest();
-      toast({
-        title: 'লেখাটি সহজ করা হয়েছে',
-        description: 'এখন সহজ ভাষায় অনুশীলন করতে পারেন।',
-      });
-    } catch (error) {
-      toast({
-        variant: 'destructive',
-        title: 'ত্রুটি',
-        description: 'লেখাটি সহজ করতে সমস্যা হয়েছে। আবার চেষ্টা করুন।',
-      });
-    } finally {
-      setIsSimplifying(false);
-    }
-  };
-
   const handleTimerDurationChange = (value: string) => {
     setTimerDuration(Number(value));
     resetTest();
@@ -95,6 +60,10 @@ export default function HomePage() {
         <h1 className="font-headline text-5xl md:text-6xl text-primary">Ôkkhor Sadhona</h1>
         <p className="text-muted-foreground mt-2 text-lg">আপনার টাইপিং দক্ষতা বৃদ্ধি করুন</p>
       </header>
+      
+      <div className='absolute top-4 right-4'>
+        <ThemeToggle />
+      </div>
 
       <main className="w-full max-w-5xl space-y-6">
         <Card>
@@ -151,21 +120,6 @@ export default function HomePage() {
                 </SelectContent>
               </Select>
             </div>
-             {language === 'bengali' && (
-              <TooltipProvider>
-                <Tooltip>
-                  <TooltipTrigger asChild>
-                    <Button onClick={handleSimplify} disabled={isSimplifying || status !== 'waiting'} variant="outline" size="sm">
-                      {isSimplifying ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <BrainCircuit className="mr-2 h-4 w-4" />}
-                      সহজ করুন
-                    </Button>
-                  </TooltipTrigger>
-                  <TooltipContent>
-                    <p>AI ব্যবহার করে লেখাকে সহজ করুন</p>
-                  </TooltipContent>
-                </Tooltip>
-              </TooltipProvider>
-            )}
           </CardContent>
         </Card>
 
