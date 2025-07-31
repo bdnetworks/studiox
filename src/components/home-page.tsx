@@ -24,6 +24,12 @@ import { useToast } from '@/hooks/use-toast';
 import { adjustTextDifficulty } from '@/ai/flows/adjust-text-difficulty';
 import Character from './character';
 import { cn } from '@/lib/utils';
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from '@/components/ui/tooltip';
 
 type Language = 'bengali' | 'english';
 type Status = 'waiting' | 'running' | 'finished';
@@ -228,24 +234,22 @@ export default function HomePage() {
               </Select>
             </div>
              {language === 'bengali' && (
-              <Button onClick={handleSimplify} disabled={isSimplifying || status !== 'waiting'} variant="outline" size="sm">
-                {isSimplifying ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <BrainCircuit className="mr-2 h-4 w-4" />}
-                সহজ করুন
-              </Button>
+              <TooltipProvider>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <Button onClick={handleSimplify} disabled={isSimplifying || status !== 'waiting'} variant="outline" size="sm">
+                      {isSimplifying ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <BrainCircuit className="mr-2 h-4 w-4" />}
+                      সহজ করুন
+                    </Button>
+                  </TooltipTrigger>
+                  <TooltipContent>
+                    <p>AI ব্যবহার করে লেখাকে সহজ করুন</p>
+                  </TooltipContent>
+                </Tooltip>
+              </TooltipProvider>
             )}
 
           </CardContent>
-        </Card>
-        
-        <Card>
-            <CardHeader>
-                <CardTitle className="font-headline text-2xl">Text to Type</CardTitle>
-            </CardHeader>
-            <CardContent>
-                <div className="text-justify leading-relaxed tracking-wider p-4 border rounded-md">
-                    {text}
-                </div>
-            </CardContent>
         </Card>
 
         <Card onClick={handleCardClick} className="relative cursor-text">
@@ -289,19 +293,21 @@ export default function HomePage() {
                 </Button>
               </div>
             )}
-             <p>
-               {characters.map((props, index) => (
-                 <Character key={index} {...props} />
-               ))}
-             </p>
-             <textarea
-               ref={inputRef}
-               className="absolute inset-0 z-10 h-full w-full cursor-text opacity-0"
-               value={userInput}
-               onChange={handleInputChange}
-               onPaste={(e) => e.preventDefault()}
-               disabled={status === 'finished'}
-             />
+             <div className="text-justify leading-relaxed tracking-wider p-4 border rounded-md mb-4 relative">
+                 <p>
+                   {characters.map((props, index) => (
+                     <Character key={index} {...props} />
+                   ))}
+                 </p>
+                 <textarea
+                   ref={inputRef}
+                   className="absolute inset-0 z-10 h-full w-full cursor-text opacity-0"
+                   value={userInput}
+                   onChange={handleInputChange}
+                   onPaste={(e) => e.preventDefault()}
+                   disabled={status === 'finished'}
+                 />
+             </div>
           </CardContent>
         </Card>
 
@@ -335,4 +341,5 @@ export default function HomePage() {
       </footer>
     </div>
   );
-}
+
+    
