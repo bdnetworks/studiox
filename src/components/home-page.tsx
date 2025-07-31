@@ -236,11 +236,22 @@ export default function HomePage() {
 
           </CardContent>
         </Card>
+        
+        <Card>
+            <CardHeader>
+                <CardTitle className="font-headline text-2xl">Text to Type</CardTitle>
+            </CardHeader>
+            <CardContent>
+                <div className="text-justify leading-relaxed tracking-wider p-4 border rounded-md">
+                    {text}
+                </div>
+            </CardContent>
+        </Card>
 
         <Card onClick={handleCardClick} className="relative cursor-text">
           <CardHeader>
             <div className="flex justify-between items-center">
-                <CardTitle className="font-headline text-2xl">Typing Area</CardTitle>
+                <CardTitle className="font-headline text-2xl">Start Typing Here</CardTitle>
                 <div className="flex items-center gap-4">
                   <RadioGroup
                     defaultValue={String(timerDuration)}
