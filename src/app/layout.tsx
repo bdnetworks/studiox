@@ -3,7 +3,6 @@ import { Toaster } from "@/components/ui/toaster"
 import './globals.css';
 import { ThemeProvider } from '@/components/theme-provider';
 import AppHeader from '@/components/header';
-import { SidebarProvider } from '@/components/ui/sidebar';
 
 export const metadata: Metadata = {
   title: 'Ôkkhor Sadhona',
@@ -29,7 +28,6 @@ export default function RootLayout({
             enableSystem
             disableTransitionOnChange
         >
-          <SidebarProvider>
             <div className="flex flex-col min-h-screen">
               <AppHeader />
               <main className="flex-grow">
@@ -37,7 +35,6 @@ export default function RootLayout({
               </main>
             </div>
             <Toaster />
-          </SidebarProvider>
         </ThemeProvider>
       </body>
     </html>
