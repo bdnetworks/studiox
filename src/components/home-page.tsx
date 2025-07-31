@@ -278,6 +278,21 @@ export default function HomePage() {
               onClick={handleCardClick}
               className="relative cursor-text text-justify leading-relaxed tracking-wider p-4 border rounded-md mb-4"
             >
+              <textarea
+                 ref={inputRef}
+                 className="absolute inset-0 z-10 h-full w-full cursor-text opacity-0"
+                 value={userInput}
+                 onChange={handleInputChange}
+                 onPaste={(e) => e.preventDefault()}
+                 disabled={status === 'finished'}
+               />
+              <div className="relative z-0">
+                 <p>
+                   {characters.map((props, index) => (
+                     <Character key={index} {...props} />
+                   ))}
+                 </p>
+              </div>
               {status === 'finished' && (
                 <div className="absolute inset-0 z-20 flex flex-col items-center justify-center bg-card/80 backdrop-blur-sm">
                   <CardTitle className="text-3xl font-headline">Time's Up!</CardTitle>
@@ -297,19 +312,6 @@ export default function HomePage() {
                   </Button>
                 </div>
               )}
-               <p>
-                 {characters.map((props, index) => (
-                   <Character key={index} {...props} />
-                 ))}
-               </p>
-               <textarea
-                 ref={inputRef}
-                 className="absolute inset-0 z-10 h-full w-full cursor-text opacity-0"
-                 value={userInput}
-                 onChange={handleInputChange}
-                 onPaste={(e) => e.preventDefault()}
-                 disabled={status === 'finished'}
-               />
             </div>
           </CardContent>
         </Card>
@@ -344,3 +346,4 @@ export default function HomePage() {
       </footer>
     </div>
   );
+}
